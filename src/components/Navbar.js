@@ -5,67 +5,111 @@ import { useAuth } from "../contexts/AuthContext";
 const Navbar = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleSignOut = async () => {
     try {
+      setIsLoading(true);
       await signOut();
-      navigate("/");
+      navigate("/signin");
     } catch (error) {
-      console.error("Error signing out:", error.message);
+      console.error("Failed to sign out:", error);
+      alert("Failed to sign out. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const NavLink = ({ to, children }) => (
+    <Link
+      to={to}
+      className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md transition-colors duration-200"
+    >
+      {children}
+    </Link>
+  );
+
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            {/* Home Link */}
             <Link
               to="/"
-              className="flex items-center text-xl font-bold text-indigo-600 hover:text-indigo-500"
+              className="flex items-center text-xl font-bold text-indigo-600 hover:text-indigo-500 transition-colors duration-200"
             >
-              <span>Sadhnapada</span>
+              <span>Sadhanapada</span>
             </Link>
           </div>
 
-          <div className="flex items-center space-x-4">
-            <Link
-              to="/"
-              className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md"
+          {/* Mobile menu button */}
+          <div className="flex items-center md:hidden">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-gray-600 hover:text-indigo-600 p-2"
+              aria-label="Toggle menu"
             >
-              Home
-            </Link>
+              {/* Simple hamburger menu icon */}
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </button>
+          </div>
+
+          {/* Desktop navigation */}
+          <div className="hidden md:flex items-center space-x-4">
+            <NavLink to="/">Home</NavLink>
             {user ? (
               <>
-                {user.role === "admin" && (
-                  <Link
-                    to="/admin"
-                    className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md"
-                  >
-                    Admin
-                  </Link>
-                )}
-                <Link
-                  to="/create-post"
-                  className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md"
-                >
-                  Create Post
-                </Link>
+                {user.role === "admin" && <NavLink to="/admin">Admin</NavLink>}
+                <NavLink to="/profile">Profile</NavLink>
                 <button
                   onClick={handleSignOut}
-                  className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md"
+                  disabled={isLoading}
+                  className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md transition-colors duration-200 disabled:opacity-50"
                 >
-                  Sign Out
+                  {isLoading ? "Signing out..." : "Sign Out"}
                 </button>
               </>
             ) : (
-              <Link
-                to="/signin"
-                className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md"
-              >
-                Sign In
-              </Link>
+              <>
+                <NavLink to="/signin">Sign In</NavLink>
+                <NavLink to="/signup">Sign Up</NavLink>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        <div className={`md:hidden ${isMenuOpen ? "block" : "hidden"}`}>
+          <div className="px-2 pt-2 pb-3 space-y-1">
+            <NavLink to="/">Home</NavLink>
+            {user ? (
+              <div className="space-y-1">
+                {user.role === "admin" && <NavLink to="/admin">Admin</NavLink>}
+                <NavLink to="/profile">Profile</NavLink>
+                <button
+                  onClick={handleSignOut}
+                  disabled={isLoading}
+                  className="w-full text-left text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md transition-colors duration-200 disabled:opacity-50"
+                >
+                  {isLoading ? "Signing out..." : "Sign Out"}
+                </button>
+              </div>
+            ) : (
+              <>
+                <NavLink to="/signin">Sign In</NavLink>
+                <NavLink to="/signup">Sign Up</NavLink>
+              </>
             )}
           </div>
         </div>

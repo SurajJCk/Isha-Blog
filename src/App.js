@@ -5,6 +5,9 @@ import CreatePostPage from "./pages/CreatePostPage";
 import PostDetailPage from "./pages/PostDetailPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import Navbar from "./components/Navbar";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+// import AuthCallbackPage from "./pages/AuthCallbackPage";
 
 function App() {
   return (
@@ -16,6 +19,9 @@ function App() {
           <Route path="/create-post" element={<CreatePostPage />} />
           <Route path="/post/:id" element={<PostDetailPage />} />
           <Route path="/admin" element={<AdminDashboardPage />} />
+          <Route path="/signin" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          {/* <Route path="/auth/callback" element={<AuthCallbackPage />} /> */}
         </Routes>
       </div>
     </Router>
