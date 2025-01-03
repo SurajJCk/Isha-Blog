@@ -1,33 +1,25 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
-import SignupPage from "./pages/SignupPage";
 import CreatePostPage from "./pages/CreatePostPage";
+import PostDetailPage from "./pages/PostDetailPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import useAuth from "./hooks/useAuth";
-import PostDetailPage from "./pages/PostDetailPage";
 
-const App = () => {
-  const { user } = useAuth();
-
+function App() {
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/create-post" element={<CreatePostPage />} />
-        {user && <Route path="/admin" element={<AdminDashboardPage />} />}
-        <Route path="/post/:id" element={<PostDetailPage />} />
-        {/* Add more routes as needed */}
-      </Routes>
-      <Footer />
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/create-post" element={<CreatePostPage />} />
+          <Route path="/post/:id" element={<PostDetailPage />} />
+          <Route path="/admin" element={<AdminDashboardPage />} />
+        </Routes>
+      </div>
     </Router>
   );
-};
+}
 
 export default App;

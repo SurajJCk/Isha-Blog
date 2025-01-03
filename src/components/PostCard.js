@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import VoteButtons from "./VoteButtons";
 
 const PostCard = ({ post }) => {
   const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    if (post.image_url) {
+      console.log("Post image URL:", post.image_url);
+    }
+  }, [post.image_url]);
 
   // Only show image if we have a URL and haven't encountered an error
   const showImage = post.image_url && !imageError;
@@ -16,7 +22,10 @@ const PostCard = ({ post }) => {
             src={post.image_url}
             alt={post.title}
             className="w-full h-full object-cover rounded-t-lg"
-            onError={() => setImageError(true)}
+            onError={(e) => {
+              console.error("Image failed to load:", post.image_url, e);
+              setImageError(true);
+            }}
             loading="lazy"
           />
         </div>
@@ -50,6 +59,12 @@ const PostCard = ({ post }) => {
         <div className="pt-4 border-t border-gray-100">
           <VoteButtons postId={post.id} />
         </div>
+
+        {post.category && (
+          <span className="inline-block bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full mb-2">
+            {post.category}
+          </span>
+        )}
       </div>
     </div>
   );

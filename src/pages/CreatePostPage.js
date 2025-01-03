@@ -58,6 +58,7 @@ const CreatePostPage = () => {
       let image_url = null;
       let video_url = null;
 
+      // Upload image if exists
       if (files.image) {
         console.log("Uploading image...");
         const { url, error: imageError } = await uploadFile(
@@ -65,10 +66,11 @@ const CreatePostPage = () => {
           "images"
         );
         if (imageError) throw imageError;
-        console.log("Image uploaded, URL:", url);
+        console.log("Image uploaded successfully:", url);
         image_url = url;
       }
 
+      // Upload video if exists
       if (files.video) {
         const { url, error: videoError } = await uploadFile(
           files.video,
@@ -78,20 +80,20 @@ const CreatePostPage = () => {
         video_url = url;
       }
 
+      // Create post with uploaded file URLs
       const { data, error } = await createPost({
         ...formData,
         image_url,
         video_url,
       });
 
-      console.log("Post created with data:", data);
-
       if (error) throw error;
-      setLoading(false);
+
       navigate("/");
     } catch (err) {
       console.error("Error creating post:", err);
       setError(err.message);
+    } finally {
       setLoading(false);
     }
   };

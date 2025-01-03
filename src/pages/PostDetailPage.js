@@ -70,7 +70,10 @@ const PostDetailPage = () => {
         </div>
       )}
 
-      <div className="prose prose-lg max-w-none">{post.content}</div>
+      <div
+        className="prose prose-lg max-w-none"
+        dangerouslySetInnerHTML={{ __html: post.content }}
+      />
 
       <div className="mt-8 pt-6 border-t border-gray-200">
         <VoteButtons postId={post.id} />
