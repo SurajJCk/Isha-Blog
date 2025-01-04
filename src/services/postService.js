@@ -164,6 +164,33 @@ export const getUserVote = async (postId) => {
   return { data: data?.vote_type, error };
 };
 
+// User role management
+export const updateUserRole = async (userId, isAdmin) => {
+  try {
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !user) {
+      throw new Error("Must be logged in to update user roles");
+    }
+
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({
+        is_admin: isAdmin,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("user_id", userId);
+
+    if (error) throw error;
+    return { error: null };
+  } catch (error) {
+    console.error("Error updating user role:", error);
+    return { error };
+  }
+};
+
 // For backward compatibility
 export const createPost = handlePost;
 export const updatePost = handlePost;

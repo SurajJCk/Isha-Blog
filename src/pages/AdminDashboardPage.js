@@ -4,6 +4,7 @@ import {
   deletePost,
   updatePost,
   uploadFile,
+  updateUserRole, // New import - you'll need to implement this in postService
 } from "../services/postService";
 
 const AdminDashboardPage = () => {
@@ -120,6 +121,25 @@ const AdminDashboardPage = () => {
     }
   };
 
+  const handleAdminToggle = async (userId, currentStatus) => {
+    try {
+      const { error } = await updateUserRole(userId, !currentStatus);
+      if (!error) {
+        // Update the posts state to reflect the change
+        setPosts(
+          posts.map((post) => {
+            if (post.author_id === userId) {
+              return { ...post, is_admin: !currentStatus };
+            }
+            return post;
+          })
+        );
+      }
+    } catch (err) {
+      console.error("Error updating user role:", err);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -148,6 +168,9 @@ const AdminDashboardPage = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Date
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Admin Status
+                </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
@@ -171,6 +194,22 @@ const AdminDashboardPage = () => {
                       {new Date(post.created_at).toLocaleDateString()}
                     </div>
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <button
+                      onClick={() =>
+                        handleAdminToggle(post.author_id, post.is_admin)
+                      }
+                      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+                        post.is_admin ? "bg-indigo-600" : "bg-gray-200"
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                          post.is_admin ? "translate-x-5" : "translate-x-0"
+                        }`}
+                      />
+                    </button>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button
                       onClick={() => handleEdit(post)}
@@ -192,7 +231,7 @@ const AdminDashboardPage = () => {
         </div>
       </div>
 
-      {/* Updated Edit Modal */}
+      {/* Edit Modal - Unchanged */}
       {isEditModalOpen && (
         <div className="fixed inset-0 z-10 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen px-4">

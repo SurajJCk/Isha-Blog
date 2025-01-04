@@ -50,7 +50,6 @@ const Navbar = () => {
               className="text-gray-600 hover:text-indigo-600 p-2"
               aria-label="Toggle menu"
             >
-              {/* Simple hamburger menu icon */}
               <svg
                 className="h-6 w-6"
                 fill="none"
@@ -70,8 +69,11 @@ const Navbar = () => {
             <NavLink to="/">Home</NavLink>
             {user ? (
               <>
-                {user.role === "admin" && <NavLink to="/admin">Admin</NavLink>}
+                {user.role === "admin" && (
+                  <NavLink to="/admin">Admin Dashboard</NavLink>
+                )}
                 <NavLink to="/profile">Profile</NavLink>
+                <NavLink to="/create-post">Create Post</NavLink>
                 <button
                   onClick={handleSignOut}
                   disabled={isLoading}
@@ -95,8 +97,11 @@ const Navbar = () => {
             <NavLink to="/">Home</NavLink>
             {user ? (
               <div className="space-y-1">
-                {user.role === "admin" && <NavLink to="/admin">Admin</NavLink>}
+                {user.role === "admin" && (
+                  <NavLink to="/admin">Admin Dashboard</NavLink>
+                )}
                 <NavLink to="/profile">Profile</NavLink>
+                <NavLink to="/create-post">Create Post</NavLink>
                 <button
                   onClick={handleSignOut}
                   disabled={isLoading}

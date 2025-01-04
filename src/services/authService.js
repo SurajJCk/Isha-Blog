@@ -8,25 +8,23 @@ export const login = async (email, password) => {
   return { user: data?.user, error };
 };
 
-export const signup = async (email, password) => {
+export const signup = async (email, password, name) => {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: {
-      emailRedirectTo: `${window.location.origin}/auth/callback`,
-    },
   });
 
   if (error) {
     return { error };
   }
 
-  // Check if email confirmation is required
-  if (data?.user?.identities?.length === 0) {
-    return {
-      user: data.user,
-      message: "Please check your email for the confirmation link.",
-    };
+  // Create a user profile
+  const { error: profileError } = await supabase
+    .from("user_profiles")
+    .insert([{ user_id: data.user.id, name, email }]);
+
+  if (profileError) {
+    return { error: profileError };
   }
 
   return { user: data.user };
