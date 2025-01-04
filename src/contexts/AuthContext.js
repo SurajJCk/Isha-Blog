@@ -51,6 +51,35 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+      if (error) {
+        console.error("Error fetching user:", error);
+      } else {
+        if (user) {
+          const { data: profile, error: profileError } = await supabase
+            .from("user_profiles")
+            .select("is_admin")
+            .eq("user_id", user.id)
+            .single();
+
+          if (profileError) {
+            console.error("Error fetching user profile:", profileError);
+          } else {
+            setUser({ ...user, is_admin: profile.is_admin });
+          }
+        }
+      }
+      setLoading(false);
+    };
+
+    fetchUser();
+  }, []);
+
   const signIn = async (email, password) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({

@@ -69,7 +69,7 @@ const Navbar = () => {
             <NavLink to="/">Home</NavLink>
             {user ? (
               <>
-                {user.role === "admin" && (
+                {user.is_admin && (
                   <NavLink to="/admin">Admin Dashboard</NavLink>
                 )}
                 <NavLink to="/profile">Profile</NavLink>
@@ -97,7 +97,7 @@ const Navbar = () => {
             <NavLink to="/">Home</NavLink>
             {user ? (
               <div className="space-y-1">
-                {user.role === "admin" && (
+                {user.is_admin && (
                   <NavLink to="/admin">Admin Dashboard</NavLink>
                 )}
                 <NavLink to="/profile">Profile</NavLink>
