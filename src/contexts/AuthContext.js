@@ -141,6 +141,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const handleGoogleCallback = async () => {
+    const { data, error } = await supabase.auth.getSessionFromUrl();
+    if (error) throw error;
+    setUser(data.user);
+  };
+
   const value = {
     user,
     loading,

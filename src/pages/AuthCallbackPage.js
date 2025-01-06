@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext"; // Adjust path based on your project
+import { useAuth } from "../contexts/AuthContext";
 
 const AuthCallbackPage = () => {
   const navigate = useNavigate();
