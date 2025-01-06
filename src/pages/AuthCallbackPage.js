@@ -1,24 +1,27 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { supabase } from "../services/supabaseClient"; // Ensure this import is correct
 
 const AuthCallbackPage = () => {
   const navigate = useNavigate();
-  const { handleGoogleCallback } = useAuth(); // Ensure this function processes Google OAuth
 
   useEffect(() => {
     const handleCallback = async () => {
-      try {
-        await handleGoogleCallback(); // Handle token and authentication logic
+      const { data, error } = await supabase.auth.getSessionFromUrl();
+      if (error) {
+        console.error("Error fetching session:", error);
+        navigate("/login"); // Redirect to login if there's an error
+        return;
+      }
+
+      // If session is successfully retrieved, navigate to the homepage
+      if (data) {
         navigate("/"); // Redirect to homepage
-      } catch (error) {
-        console.error("Error during Google callback:", error);
-        navigate("/login"); // Redirect to login if something goes wrong
       }
     };
 
     handleCallback();
-  }, [navigate, handleGoogleCallback]);
+  }, [navigate]);
 
   return <div>Loading...</div>; // Optional: Add a spinner or loader here
 };
