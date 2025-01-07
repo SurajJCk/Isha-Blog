@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch the session and set the user on component mount
   useEffect(() => {
     let mounted = true;
 
@@ -17,7 +18,6 @@ export const AuthProvider = ({ children }) => {
           data: { session },
           error,
         } = await supabase.auth.getSession();
-
         if (error) throw error;
 
         if (mounted) {
@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }) => {
 
     fetchSession();
 
+    // Listen for auth state changes (login, logout, etc.)
     const { data: subscription } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (mounted) {
@@ -51,6 +52,7 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
+  // Fetch user profile and set the user with is_admin status
   useEffect(() => {
     const fetchUser = async () => {
       const {
@@ -77,9 +79,12 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     };
 
-    fetchUser();
-  }, []);
+    if (!user) {
+      fetchUser();
+    }
+  }, [user]);
 
+  // Sign-in logic
   const signIn = async (email, password) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -94,6 +99,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Sign-up logic
   const signUp = async (email, password) => {
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -108,6 +114,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Sign-out logic
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -118,6 +125,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Google OAuth sign-in
   const signInWithGoogle = async () => {
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -131,6 +139,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Password reset logic
   const resetPassword = async (email) => {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email);
@@ -141,14 +150,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Handle Google OAuth callback
   const handleGoogleCallback = async () => {
-    const { data, error } = await supabase.auth.getSessionFromUrl();
+    const { data, error } = await supabase.auth.getSession();
     if (error) throw error;
     setUser(data.user);
   };
 
+  // Provide the context value for the rest of the application
   const value = {
     user,
+    setUser, // Added setUser to make it accessible to other components
     loading,
     error,
     signIn,
@@ -156,7 +168,8 @@ export const AuthProvider = ({ children }) => {
     signOut,
     signInWithGoogle,
     resetPassword,
-    isAuthenticated: !!user,
+    handleGoogleCallback,
+    isAuthenticated: !!user, // Check if the user is authenticated
   };
 
   return (
@@ -166,6 +179,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+// Custom hook to access auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

@@ -7,7 +7,7 @@ const AuthCallbackPage = () => {
 
   useEffect(() => {
     const handleCallback = async () => {
-      const { data, error } = await supabase.auth.getSessionFromUrl();
+      const { data, error } = await supabase.auth.getSession();
       if (error) {
         console.error("Error fetching session:", error);
         navigate("/login"); // Redirect to login if there's an error

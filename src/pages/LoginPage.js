@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { login, signInWithGoogle } from "../services/authService";
 import { useAuth } from "../contexts/AuthContext";
@@ -9,34 +9,45 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { setUser } = useAuth();
+  const { user, setUser } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/"); // Redirect if already logged in
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    const { user, error } = await login(email, password);
-    if (error) {
-      setError(error.message);
-    } else {
+    try {
+      const { user, error } = await login(email, password);
+      if (error) throw new Error(error.message);
       setUser(user);
       navigate("/");
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleGoogleLogin = async () => {
     setLoading(true);
     setError("");
 
-    const { user, error } = await signInWithGoogle();
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-    } else {
+    try {
+      const { user, error } = await signInWithGoogle();
+      if (error) throw new Error(error.message);
       setUser(user);
       navigate("/");
+    } catch (error) {
+      console.error("Error during Google Sign-in:", error);
+      setError("An unexpected error occurred. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -110,8 +121,9 @@ const LoginPage = () => {
             <button
               onClick={handleGoogleLogin}
               className="font-medium text-indigo-600 hover:text-indigo-500"
+              disabled={loading}
             >
-              Sign in with Google
+              {loading ? "Signing in with Google..." : "Sign in with Google"}
             </button>
           </div>
         </div>
@@ -121,4 +133,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-// ... existing code ...
